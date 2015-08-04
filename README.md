@@ -1,10 +1,10 @@
 About BadgeOS D2SI Add-on
 ============
-This add-on add a "set goals" feature to badgeos. With this, you can now choose the badges you want to work on, keep them visible and achieve your goals 
-Features list : 
-* Add set/unset goal feature
-* Add a shortcode for goal achievements display
-* Add admin management tools
+
+This add-on add various tools to display community badges activity
+It needs BuddyPress plugin.
+Features list :
+* Add a shortcode to display the last achievement earners
 
 About BadgeOS
 ============
