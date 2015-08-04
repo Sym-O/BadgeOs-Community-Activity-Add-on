@@ -1,0 +1,59 @@
+#badgeos-last-earners-container{
+}
+.badgeos-earner-item{
+    float: left;
+    position: relative;
+    left: 0; top: 0;
+    min-width: 80px; 
+    min-height: 80px; 
+    width: 12.5%;
+    height: 0;
+    padding-bottom:12.5%;
+    margin:10px;
+    background-color:#00FF00;
+    border:1px solid #00CC00;
+    overflow:hidden;
+    -webkit-border-radius:50%;
+    -moz-border-radius:50%;
+    border-radius:50%;
+}
+.badgeos-earner-avatar img{
+    width : 100%;
+}
+.badgeos-earner-achievement{
+    position: absolute;
+    bottom: 0px; right: 0px;
+    width: 50%; height: 50%;
+}
+.badgeos-earner-description{
+    z-index: 10;
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    float: left; 
+    text-align: center;
+	height: auto;
+    min-width: 80px;
+    max-width: 150px;
+	padding: 5px;
+	margin: none;
+    color: white;
+	background: black;
+	border: 2px solid #00ff00;
+}
+/*.badgeos-last-nomination-container .bcd div a.bottom{
+    text-shadow:1px 1px 0 rgba(232,232,232,1);
+    font-weight:bold;
+    color:#000000;
+    letter-spacing:0pt;
+    word-spacing:1pt;
+    font-size:12px;
+    text-align:center;
+    font-family:times new roman, times, serif;
+    line-height:1;margin:0px;padding:0px;
+    background: none repeat scroll 0 0 ;
+    top: 60px; left: 0px;
+    position: absolute;
+    width: 100%;
+    display: inline-block;
+}*/
