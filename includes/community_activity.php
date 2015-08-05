@@ -14,7 +14,7 @@
 *
 * 
 */
-function badgeos_get_last_earners ( $topCount=10 ) { 		
+function badgeos_get_last_earnings ( $topCount=10 ) { 		
  badgeos_log ( 'badgeos_get_last_earners called with  $topCount='.$topCount);
 
  $args = array(
@@ -40,45 +40,3 @@ function badgeos_get_last_earners ( $topCount=10 ) {
 
  return  $res;
 }
-
-
-// TODO NON UTILE
-// /* AJAX Helper for inserting last earners in achievement rendering
-// *
-// * @since 1.0.0
-// * @return void
-// */
-//function badgeos_last_earners_filter($achievement_html, $goals_array = 0, $topCount=10){
-//
-//	badgeos_log ( "badgeos_last_earners_filter return HTML:".$achievement_html);
-//    $show_goals = isset( $_REQUEST['show_goals'] ) ? $_REQUEST['show_goals'] : false;
-//    $layout     = isset( $_REQUEST['layout'] )     ? $_REQUEST['layout']     : 'list';
-//
-//    $goals_array = ( $goals_array == 0 ) ? badgeos_get_last_earners( $user_ID, $topCount) : $goals_array;
-//    $in_goals = in_array( get_the_ID() , $goals_array );
-//
-//        $achieved = badgeos_get_user_achievements( array( 'user_id' => $user_ID, 'achievement_id' => $achievement_id) );
-//
-//        // build button
-//        $button = '';
-//        if ($achieved && $in_goals)
-//            $button = '<div class="goal-action"><img class="goal-no-action"  value="'.$achievement_id.'" src="'.badgeos_set_goals_get_directory_url().'/images/goal-success.png" title="Goal achieved"></img></div>';
-//        else if (!$achieved && $in_goals)
-//            $button = '<div class="goal-action"><img class="goal-action-img" value="'.$achievement_id.'" src="'.badgeos_set_goals_get_directory_url().'/images/goal-set.png" title="Click to UNset Goal"></img></div>';
-//        else if (!$achieved && !$in_goals)
-//            $button = '<div class="goal-action"><img class="goal-action-img" value="'.$achievement_id.'" src="'.badgeos_set_goals_get_directory_url().'/images/goal-to-set.png" title="Click to SET Goal"></img></div>';
-//        
-//        // Add button depending on layout
-//        if ($layout == "list"){
-//            $achievement_html = str_replace("<!-- .badgeos-item-image -->","<!-- .badgeos-item-image -->".$button, $achievement_html);
-//            return $achievement_html;
-//        }
-//        else {
-//            $button = '<div class="goal-action-container">'.$button;
-//            $achievement_html = str_replace('<div class="badgeos-item-image">',$button.'<div class="badgeos-item-image">', $achievement_html);
-//            $achievement_html = str_replace("<!-- .badgeos-item-image -->","</div><!-- .badgeos-item-image -->", $achievement_html);
-//            return $achievement_html;
-//        }
-//}
-//add_action( 'badgeos_get_last_earners', 'badgeos_last_earners_filter', 10, 2); // TODO Chelou ici...
-
