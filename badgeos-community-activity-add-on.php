@@ -62,7 +62,6 @@
 		// If BadgeOS is available...
         if ( $this->meets_requirements() ) {
             require_once( $this->directory_path . '/includes/community_activity.php' );
-            require_once( $this->directory_path . '/includes/log.php' );
             require_once( $this->directory_path . '/includes/shortcodes/badgeos_last_earners.php' );
 		}
 

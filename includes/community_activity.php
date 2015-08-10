@@ -15,7 +15,6 @@
 * 
 */
 function badgeos_get_last_earnings ( $topCount=10 ) { 		
- badgeos_log ( 'badgeos_get_last_earners called with  $topCount='.$topCount);
 
  $args = array(
 	'posts_per_page'   => $topCount,
@@ -36,7 +35,6 @@ function badgeos_get_last_earnings ( $topCount=10 ) {
 	'suppress_filters' => true 
  );
  $res = get_posts( $args );
- badgeos_log ( "badgeos_get_last_earners for arg= ".badgeos_arrayStr ($args)."  return ".badgeos_arrayStr ($res));
 
  return  $res;
 }
