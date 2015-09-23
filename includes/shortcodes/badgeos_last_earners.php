@@ -91,8 +91,15 @@ function badgeos_last_earners_shortcode( $atts = array () ){
 	);
 	wp_localize_script( 'badgeos-community-activity', 'badgeos', $data );
 
+    // If we're dealing with multiple achievement types
+	if ( 'all' == $type ) {
+		$types = badgeos_get_achievement_types_slugs();
+	} else {
+		$types = explode( ',', $type );
+	}
+
     // Get last earnings
-	$last_earnings = badgeos_get_last_earnings($limit);
+	$last_earnings = badgeos_get_last_earnings($limit*2);
 	
 	$badges = '';
 
@@ -103,7 +110,11 @@ function badgeos_last_earners_shortcode( $atts = array () ){
 	// Content Container
     $badges .= '<div id="badgeos-last-earners-container">';
 	reset($last_earnings);	
-	foreach ($last_earnings as $earning){
+    $count = 0;
+    foreach ($last_earnings as $earning){
+        if ($count == $limit) {
+            break;
+        }
 		$user_info = get_userdata($earning->post_author);
 		$achievement_id = get_post_meta($earning->ID,'_badgeos_log_achievement_id',true);
         if (strrpos($earning->post_name,"-credly",7)) {
@@ -111,52 +122,65 @@ function badgeos_last_earners_shortcode( $atts = array () ){
         } else {
             $achievement_type = get_post_type($achievement_id);
         }
-        $avatar_url="";
-        $achievement_url="";
-        $image="";
-        $description = "";
+        // Continue only if it's an event we want to display
+        if ($achievement_type == "step" or in_array($achievement_type, $types)) {
+            $avatar_url         ="";
+            $achievement_url    ="";
+            $image              ="";
+            $description        = "";
+            $send_credly        = false;
+            $credly_url         = "";
+            $credly_image       = "";
 
-        // define each displayed element of the earning
-        switch ($achievement_type){
-        case "step":
-            $parent_achievement = badgeos_get_parent_of_achievement($achievement_id);
-            $avatar_url         = bp_core_get_user_domain( $user_info->id ).'achievements/"';
-            $achievement_url    = get_permalink($parent_achievement);
-            $achievement_image  = badgeos_get_achievement_post_thumbnail ($achievement_id);
-            $description        = $user_info->first_name.' a validé une étape pour </br>"'.get_the_title($parent_achievement);
-            break;
-        case "credly":
-            $avatar_url         = 'https://credly.com/recipients/'.get_post_meta($achievement_id,'_badgeos_credly_badge_id',true);
-            $achievement_url    = 'https://credly.com/recipients/'.get_post_meta($achievement_id,'_badgeos_credly_badge_id',true);
-            $achievement_image  = '<img class="badgeos-item-thumbnail wp-post-image" width="100" height="100" src="'.badgeos_community_activity_get_directory_url().'/images/credly-active.png"></img>';
-            $description        = $user_info->first_name.' a publié sur Credly son badge </br>"'.get_the_title($achievement_id);
-            break;
-        default:
-            $avatar_url         = bp_core_get_user_domain( $user_info->id ).'achievements/';
-            $achievement_url    = get_permalink($achievement_id);
-            $achievement_image  = badgeos_get_achievement_post_thumbnail ($achievement_id);
-            $description        = $user_info->first_name.' a obtenu </br>"'.get_the_title($achievement_id);
-            break;
+            // define each displayed element of the earning
+            if ($achievement_type == "step") {
+                $parent_achievement = badgeos_get_parent_of_achievement($achievement_id);
+                $avatar_url         = bp_core_get_user_domain( $user_info->id ).'achievements/"';
+                $achievement_url    = get_permalink($parent_achievement);
+                $achievement_image  = badgeos_get_achievement_post_thumbnail ($achievement_id);
+                $description        = $user_info->first_name.' a validé une étape pour </br>"'.get_the_title($parent_achievement);
+
+                $credly_url         = '';
+                $credly_image       = '';
+            } else {
+                $avatar_url         = bp_core_get_user_domain( $user_info->id ).'achievements/';
+                $achievement_url    = get_permalink($achievement_id);
+                $achievement_image  = badgeos_get_achievement_post_thumbnail ($achievement_id);
+                $description        = $user_info->first_name.' a obtenu </br>"'.get_the_title($achievement_id);
+
+                if ($send_credly = get_post_meta($achievement_id,'_badgeos_send_to_credly',true)) {
+                    $credly_url         = 'https://credly.com/recipients/'.get_post_meta($achievement_id,'_badgeos_credly_badge_id',true);
+                    $credly_image       = '<img class="badgeos-item-thumbnail wp-post-image" width="100" height="100" src="'.badgeos_community_activity_get_directory_url().'/images/credly-active.png"></img>';
+                }
+            }
+
+            // Compose the HTML message
+		    $badges .= '<div id= "badgeos-earner-item-'.$earning->ID.'" class="badgeos-earner-item">' ;  
+		    $badges .= '<div class="badgeos-earner-avatar">';
+            $badges .= '<a href="'.$avatar_url.'" target="_blank" onmouseover="displayEarnerDescription('.$earning->ID.')" onmouseout="hideEarnerDescription('.$earning->ID.')" onclick="hideDescription('.$earning->ID.')">';
+		    $badges .= get_avatar( $user_info->id, 192);
+            $badges .= '</a>';
+		    $badges .= '</div>';
+            if ($send_credly == "true") {
+		        $badges .= '<div  class="badgeos-earner-credly">';
+                $badges .= '<a href="' . $credly_url . '" target="_blank" onmouseover="displayEarnerDescription('.$earning->ID.')" onmouseout="hideEarnerDescription('.$earning->ID.')" onclick="hideDescription('.$earning->ID.')">';
+		        $badges .= $credly_image;
+                $badges .= '</a>';
+		        $badges .= '</div>';
+            }
+		    $badges .= '<div  class="badgeos-earner-achievement">';
+            $badges .= '<a href="' . $achievement_url . '" target="_blank" onmouseover="displayEarnerDescription('.$earning->ID.')" onmouseout="hideEarnerDescription('.$earning->ID.')" onclick="hideDescription('.$earning->ID.')">';
+		    $badges .= $achievement_image;
+            $badges .= '</a>';
+		    $badges .= '</div>';
+            $badges .= '</div>';
+            // Description of earning
+            $today = date('Y-m-d h:i:s');
+            $earned_date = $earning->post_date;
+            $delay = abs(round((strtotime($today) - strtotime($earned_date))/(60*60*24)));
+            $badges .= '<div class="badgeos-earner-description" id="earner-description-'.$earning->ID.'">'.$description.'"</br>il y a '.$delay.' jour(s)</div>';
+            $count++;
         }
-
-        // Compose the HTML message
-		$badges .= '<div id= "badgeos-earner-item-'.$earning->ID.'" class="badgeos-earner-item">' ;  
-		$badges .= '<div class="badgeos-earner-avatar">';
-        $badges .= '<a href="'.$avatar_url.'" target="_blank" onmouseover="displayEarnerDescription('.$earning->ID.')" onmouseout="hideEarnerDescription('.$earning->ID.')" onclick="hideDescription('.$earning->ID.')">';
-		$badges .= get_avatar( $user_info->id, 192);
-        $badges .= '</a>';
-		$badges .= '</div>';
-		$badges .= '<div  class="badgeos-earner-achievement">';
-        $badges .= '<a href="' . $achievement_url . '" target="_blank" onmouseover="displayEarnerDescription('.$earning->ID.')" onmouseout="hideEarnerDescription('.$earning->ID.')" onclick="hideDescription('.$earning->ID.')">';
-		$badges .= $achievement_image;
-        $badges .= '</a>';
-		$badges .= '</div>';
-        $badges .= '</div>';
-        // Description of earning
-        $today = date('Y-m-d h:i:s');
-        $earned_date = $earning->post_date;
-        $delay = abs(round((strtotime($today) - strtotime($earned_date))/(60*60*24)));
-        $badges .= '<div class="badgeos-earner-description" id="earner-description-'.$earning->ID.'">'.$description.'"</br>il y a '.$delay.' jour(s)</div>';
     }
 
 	$badges .= '<div style="clear: both;margin: 0px;padding: 0px;"></div>';
